@@ -16,6 +16,19 @@
 #include "vector.c"
 #include "table.c"
 
+/**
+ * Need to support :
+ *
+ * - sort : Sort table by column. Sort results of a find/filter
+ * - skip/limit : on results
+ * - filter : By value, by various conditions
+ * - medians : On table, or on results of a find
+ * - averages : as above
+ * - find - Find by comparison of values or functions
+ * - add user defined functions
+ * - return a subset of columns from a query
+ * - build/teardown indexes on the fly.
+ */
 
 int main(int argc, char *argv[]) {
 
@@ -73,7 +86,23 @@ int main(int argc, char *argv[]) {
 	exit(EXIT_SUCCESS);
 }
 
+/*
+ * FILE *fp;
+           char *line = NULL;
+           size_t len = 0;
+           ssize_t read;
 
+           fp = fopen("/etc/motd", "r");
+           if (fp == NULL)
+               exit(EXIT_FAILURE);
+
+           while ((read = getline(&line, &len, fp)) != -1) {
+               printf("Retrieved line of length %zu :\n", read);
+               printf("%s", line);
+           }
+
+           free(line);
+ */
 void vectorize_csv(struct Vector *vector, char *str, size_t length) {
 	int l = 0;
 	int last_comma = 0;

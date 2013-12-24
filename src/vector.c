@@ -44,7 +44,7 @@ int vector_find(struct Vector *vector, const char value[])
 {
 	for(int i = 0; i < vector->length; i++)
 	{
-		printf("i = %i, '%s' == '%s'. CMP = %i\n", i, vector->data[i], value, strcmp(vector->data[i], value));
+//		printf("i = %i, '%s' == '%s'. CMP = %i\n", i, vector->data[i], value, strcmp(vector->data[i], value));
 
 		if(strcmp(vector->data[i], value) == 0)
 			return i;
