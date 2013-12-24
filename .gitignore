@@ -16,3 +16,8 @@
 *.exe
 *.out
 *.app
+
+#ADIL
+bin/*
+.cproject
+.project
