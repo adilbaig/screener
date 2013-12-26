@@ -32,89 +32,76 @@
 
 int main(int argc, char *argv[]) {
 
-	//Read strings from a file and load them in memory
-	//Access and read them from a given position
+    //Read strings from a file and load them in memory
+    //Access and read them from a given position
 
-	FILE *stream = fopen(argv[1], "r");
-	if (stream == NULL) {
-		perror("Could not open file");
-		exit(EXIT_FAILURE);
-	}
+    FILE *stream = fopen(argv[1], "r");
+    if (stream == NULL) {
+        perror("Could not open file");
+        exit(EXIT_FAILURE);
+    }
 
-	struct Table table;
-	table_init(&table);
+    struct Table table;
+    table_init(&table);
 
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t read;
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
 
-	while ((read = getline(&line, &len, stream)) != -1) {
-		struct Vector* vector = malloc(sizeof(struct Vector));
-		vector_init(vector);
-		vectorize_csv(vector, line, read); // we don't pass the new line char
-		//vector_print(&vector);
-		table_append(&table, vector);
-	}
+    while ((read = getline(&line, &len, stream)) != -1) {
+        struct Vector* vector = malloc(sizeof(struct Vector));
+        vector_init(vector);
+        vectorize_csv(vector, line, read); // we don't pass the new line char
+        //vector_print(&vector);
+        table_append(&table, vector);
+    }
 
-	free(line);
-	fclose(stream);
+    free(line);
+    fclose(stream);
 
-	//table_print(&table);
+    //table_print(&table);
 
-	printf("Get RIC\n");
-	char **rez;
+    read_command(&table);
 
-	/**
-	 * CAREFUL! Every time table_get_values > 0, it has malloced. Free it!
-	 */
-	if (table_get_values(&table, "RIC", &rez) >= 0) {
-		for (int i = 0; i < table.length - 1; i++)
-			printf("'%s', ", rez[i]);
-		free(rez);
-	}
+    table_free(&table);
 
-	if (table_get_values(&table, "AssetCategory", &rez) >= 0) {
-		for (int i = 0; i < table.length - 1; i++)
-			printf("'%s', ", rez[i]);
-		free(rez);
-	}
-
-	pause();
-
-	table_free(&table);
-
-	exit(EXIT_SUCCESS);
+    exit(EXIT_SUCCESS);
 }
 
-/*
- * FILE *fp;
-           char *line = NULL;
-           size_t len = 0;
-           ssize_t read;
+void read_command(struct Table* table) {
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
 
-           fp = fopen("/etc/motd", "r");
-           if (fp == NULL)
-               exit(EXIT_FAILURE);
+    printf("SHOW COLUMN : ");
 
-           while ((read = getline(&line, &len, fp)) != -1) {
-               printf("Retrieved line of length %zu :\n", read);
-               printf("%s", line);
-           }
+    if((read = getline(&line, &len, stdin)) != -1) {
+        line[read-1] = '\0';
+    }
 
-           free(line);
- */
+    char **rez;
+    // CAREFUL! Every time table_get_values > 0, it has malloced. Free it!
+    if (table_get_values(table, line, &rez) >= 0) {
+        for (int i = 0; i < table->length - 1; i++)
+            printf("'%s', ", rez[i]);
+        free(rez);
+    }
+
+    free(line);
+}
+
 void vectorize_csv(struct Vector *vector, char *str, size_t length) {
-	int l = 0;
-	int last_comma = 0;
+    int l = 0;
+    int last_comma = 0;
 
-	//Go through *str char by char ..
-	for (int i = 0; i < length; i++) {
-		// .. when you hit one of [,\n] or end, process the remaining string into a vector entry
-		if (str[i] == ',' || i + 1 == length) {
-			l = i - last_comma;
-			//printf("%i) Address %x, '%s', Length = %i \n", i, &str[last_comma], &str[last_comma], l);
-			vector_append(vector, &str[last_comma], l);
-			last_comma = i + 1;
-		}
-	}
+    //Go through *str char by char ..
+    for (int i = 0; i < length; i++) {
+        // .. when you hit one of [,\n] or end, process the remaining string into a vector entry
+        if (str[i] == ',' || i + 1 == length) {
+            l = i - last_comma;
+            //printf("%i) Address %x, '%s', Length = %i \n", i, &str[last_comma], &str[last_comma], l);
+            vector_append(vector, &str[last_comma], l);
+            last_comma = i + 1;
+        }
+    }
 }
