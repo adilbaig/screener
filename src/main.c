@@ -15,10 +15,12 @@
 #include <errno.h>
 #include "vector.c"
 #include "table.c"
+#include "commands.c"
 
 /**
  * Need to support :
  *
+ * - networking : Allow connecting to the server and issuing commands
  * - sort : Sort table by column. Sort results of a find/filter
  * - skip/limit : on results
  * - filter : By value, by various conditions
@@ -35,14 +37,43 @@ int main(int argc, char *argv[]) {
     //Read strings from a file and load them in memory
     //Access and read them from a given position
 
-    FILE *stream = fopen(argv[1], "r");
+    struct Table table;
+    load_table(&table, argv[1]);
+
+    //table_print(&table);
+
+    while (1) {
+        char *line = NULL;
+        size_t len = 0;
+        ssize_t read;
+
+        printf("COMMAND : ");
+
+        if ((read = getline(&line, &len, stdin)) > 1) {
+            line[read - 1] = '\0';
+        } else {
+            continue;
+        }
+
+        execute_command(line, &table);
+
+        if (read > 0)
+            free(line);
+    }
+
+    table_free(&table);
+
+    exit(EXIT_SUCCESS);
+}
+
+void load_table(struct Table* table, char* file) {
+    FILE *stream = fopen(file, "r");
     if (stream == NULL) {
         perror("Could not open file");
         exit(EXIT_FAILURE);
     }
 
-    struct Table table;
-    table_init(&table);
+    table_init(table);
 
     char *line = NULL;
     size_t len = 0;
@@ -53,41 +84,42 @@ int main(int argc, char *argv[]) {
         vector_init(vector);
         vectorize_csv(vector, line, read); // we don't pass the new line char
         //vector_print(&vector);
-        table_append(&table, vector);
+        table_append(table, vector);
     }
 
     free(line);
     fclose(stream);
-
-    //table_print(&table);
-
-    read_command(&table);
-
-    table_free(&table);
-
-    exit(EXIT_SUCCESS);
 }
 
-void read_command(struct Table* table) {
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
+void execute_command(char* cmd, struct Table* table) {
+    //strdup mallocs and returns a pointer. Free it!
+    char* cmd_copy = strdup(cmd);
+    char* tok = strtok(cmd_copy, " ");
 
-    printf("SHOW COLUMN : ");
+    if (strcmp(cmd, "PRINT COLUMNS") == 0) {
+        print_columns(table);
+    } else if (strcmp(tok, "IS_COLUMN") == 0) {
+        char* search = strtok(NULL, " ");
 
-    if((read = getline(&line, &len, stdin)) != -1) {
-        line[read-1] = '\0';
+        printf("IS_COLUMN '%s'? : ", search);
+        int pos;
+        if (search != NULL && (pos = is_column(table, search)) > -1) {
+            printf("TRUE (%i)\n", pos);
+        } else {
+            printf("FALSE\n");
+        }
+    } else if (strcmp(tok, "COLUMN") == 0) {
+        char* search = strtok(NULL, " ");
+
+        printf("Searching for COLUMN '%s'\n", search);
+        if (search != NULL) {
+            print_column(table, search);
+        }
+    } else {
+        printf("PRINT COLUMNS, IS_COLUMN <COLUMN NAME>, COLUMN <COLUMN NAME>, SORT_BY <COLUMN_NAME>, FILTER <COLUMN NAME>\n");
     }
 
-    char **rez;
-    // CAREFUL! Every time table_get_values > 0, it has malloced. Free it!
-    if (table_get_values(table, line, &rez) >= 0) {
-        for (int i = 0; i < table->length - 1; i++)
-            printf("'%s', ", rez[i]);
-        free(rez);
-    }
-
-    free(line);
+    free(cmd_copy);
 }
 
 void vectorize_csv(struct Vector *vector, char *str, size_t length) {
@@ -96,7 +128,7 @@ void vectorize_csv(struct Vector *vector, char *str, size_t length) {
 
     //Go through *str char by char ..
     for (int i = 0; i < length; i++) {
-        // .. when you hit one of [,\n] or end, process the remaining string into a vector entry
+        // .. when you hit one of [,\n] or EOL, process the remaining string into a vector entry
         if (str[i] == ',' || i + 1 == length) {
             l = i - last_comma;
             //printf("%i) Address %x, '%s', Length = %i \n", i, &str[last_comma], &str[last_comma], l);

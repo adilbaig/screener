@@ -94,7 +94,7 @@ void table_filter_column_null(struct Table *table, size_t column) {
 }
 
 //Sort table by column values
-void table_sort_by_column(struct Table *table, size_t column, BOOL asc) {
+void table_sort_by_column(struct Table *table, size_t column, char asc) {
 
 }
 
