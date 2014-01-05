@@ -1,3 +1,3 @@
 
 screener:
-	gcc -g -std=c99 src/screener.c -obin/screener
+	gcc -g -std=c99 src/main.c -obin/screener

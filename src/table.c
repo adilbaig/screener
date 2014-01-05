@@ -88,6 +88,16 @@ int table_get_values(struct Table *table, const char *search, char ***strings) {
 	return pos;
 }
 
+// Filter nulls in column
+void table_filter_column_null(struct Table *table, size_t column) {
+
+}
+
+//Sort table by column values
+void table_sort_by_column(struct Table *table, size_t column, BOOL asc) {
+
+}
+
 void table_print(struct Table *table) {
 	printf("Printing %i rows from table\n", table->length);
 
