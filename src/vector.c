@@ -1,14 +1,14 @@
-#include <sys/mman.h>
-#include <string.h>
-#include <stdlib.h>
+#include "../headers/vector.h"
 
-struct Vector {
-	int length; // slots used so far
-	int capacity; // total available slots
-	char **data; // array of strings
-};
+/** ------------ PRIVATE ------------ **/
 
-void vector_increase_capacity(struct Vector *vector, int capacity);
+//static == (private in PHP)
+static void vector_increase_capacity(struct Vector *vector, int capacity) {
+    vector->capacity += capacity;
+    vector->data = realloc(vector->data, sizeof(size_t) * vector->capacity);
+}
+
+/** ------------ PUBLIC ------------ **/
 
 void vector_init(struct Vector *vector) {
 	vector->length = 0;
@@ -40,7 +40,7 @@ char* vector_get(struct Vector *vector, int index) {
 }
 
 
-int vector_find(struct Vector *vector, const char value[])
+ssize_t vector_find(struct Vector *vector, const char value[])
 {
 	for(int i = 0; i < vector->length; i++)
 	{
@@ -51,12 +51,6 @@ int vector_find(struct Vector *vector, const char value[])
 	}
 
 	return -1;
-}
-
-//static == (private in PHP)
-void vector_increase_capacity(struct Vector *vector, int capacity) {
-	vector->capacity += capacity;
-	vector->data = realloc(vector->data, sizeof(size_t) * vector->capacity);
 }
 
 void vector_print(struct Vector *vector) {

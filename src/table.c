@@ -1,3 +1,5 @@
+#include "../headers/table.h"
+
 /**
  * Stores a series of vectors in a table.
  * Allows searching for a given vector by id, and retrieving its at a given position.
@@ -15,20 +17,6 @@
  * This table does not use malloc/realloc, but works with variable length arrays as defined in C99.
  * I've now stopped using it because it causes a stack overflow!
  */
-
-/**
- * A Table struct stores a :
- *  - an array of pointers to a Vector
- *  - a length
- *  - current capacity
- */
-struct Table {
-	int length;
-	int capacity;
-	struct Vector** vectors;
-};
-
-void table_increase_capacity(struct Table *table, int capacity);
 
 void table_init(struct Table *table) {
 	table->length = 0;
@@ -55,13 +43,16 @@ void table_increase_capacity(struct Table *table, int capacity) {
 	table->capacity += capacity;
 	table->vectors = realloc(table->vectors, sizeof(size_t) * table->capacity);
 
-	if(table->vectors == NULL) {
+	if(!table->vectors) {
 		perror("Could not realloc table->vectors");
 		exit(1);
 	}
 }
 
-struct Vector* table_get(struct Table *table, int index) {
+/**
+ * Get a row at index from table
+ */
+struct Vector* table_get(struct Table *table, size_t index) {
 	if (index >= table->length || index < 0) {
 		printf("Index %d out of bounds for table of length %d\n", index,
 				table->length);
@@ -71,8 +62,8 @@ struct Vector* table_get(struct Table *table, int index) {
 	return table->vectors[index];
 }
 
-int table_get_values(struct Table *table, const char *search, char ***strings) {
-	int pos = vector_find(table_get(table, 0), search);
+ssize_t table_get_values(struct Table *table, const char *search, char ***strings) {
+    ssize_t pos = vector_find(table_get(table, 0), search);
 	if(pos < 0) {
 		return pos;
 	}
@@ -86,16 +77,6 @@ int table_get_values(struct Table *table, const char *search, char ***strings) {
 	*strings = _tmp;
 
 	return pos;
-}
-
-// Filter nulls in column
-void table_filter_column_null(struct Table *table, size_t column) {
-
-}
-
-//Sort table by column values
-void table_sort_by_column(struct Table *table, size_t column, char asc) {
-
 }
 
 void table_print(struct Table *table) {

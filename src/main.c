@@ -13,9 +13,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include "vector.c"
-#include "table.c"
-#include "commands.c"
+#include "../headers/commands.h"
 
 /**
  * Need to support :
@@ -96,7 +94,9 @@ void execute_command(char* cmd, struct Table* table) {
     char* cmd_copy = strdup(cmd);
     char* tok = strtok(cmd_copy, " ");
 
-    if (strcmp(cmd, "PRINT COLUMNS") == 0) {
+    if (strcmp(cmd, "EXIT") == 0) {
+        exit(0);
+    }else if (strcmp(cmd, "PRINT COLUMNS") == 0) {
         print_columns(table);
     } else if (strcmp(tok, "IS_COLUMN") == 0) {
         char* search = strtok(NULL, " ");
@@ -116,7 +116,7 @@ void execute_command(char* cmd, struct Table* table) {
             print_column(table, search);
         }
     } else {
-        printf("PRINT COLUMNS, IS_COLUMN <COLUMN NAME>, COLUMN <COLUMN NAME>, SORT_BY <COLUMN_NAME>, FILTER <COLUMN NAME>\n");
+        printf("PRINT COLUMNS, IS_COLUMN <COLUMN NAME>, COLUMN <COLUMN NAME>, SORT_BY <COLUMN_NAME>, FILTER <COLUMN NAME>, EXIT\n");
     }
 
     free(cmd_copy);

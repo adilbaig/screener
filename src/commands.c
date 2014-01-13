@@ -1,4 +1,4 @@
-
+#include "../headers/commands.h"
 
 ssize_t is_column(struct Table* table, char* column)
 {
