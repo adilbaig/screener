@@ -8,8 +8,9 @@
  */
 
 #include <sys/types.h>
+#include <stdio.h>
 #include "table.h"
 
 ssize_t is_column(struct Table* table, char* column);
 void print_columns(struct Table *table);
-void print_column(struct Table* table, char* column);
+void print_column(struct Table* table, char* column, FILE* fd_out);

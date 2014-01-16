@@ -17,17 +17,19 @@ void print_columns(struct Table *table)
     printf("\n");
 }
 
-void print_column(struct Table* table, char* column)
+void print_column(struct Table* table, char* column, FILE* fd_out)
 {
     char **rez;
 
     // CAREFUL! Every time table_get_values > 0, it has malloced. Free it!
     if (table_get_values(table, column, &rez) >= 0) {
+
         for (int i = 0; i < table->length - 1; i++) {
             printf("'%s', ", rez[i]);
+            fprintf(fd_out, "'%s', ", rez[i]);
         }
 
         free(rez);
-        printf("\n");
+        fputs("\n", fd_out);
     }
 }
