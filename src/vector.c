@@ -18,9 +18,9 @@ void vector_init(struct Vector *vector) {
 }
 
 /**
- * memcpy *value with l length to *vector
+ * Duplicate the string "value" and append it to vector
  */
-void vector_append(struct Vector *vector, const char *value, size_t l) {
+int vector_append_copy(struct Vector *vector, const char *value, size_t l) {
 	// make sure there's room to expand into
 	if (vector->length >= vector->capacity) {
 		vector_increase_capacity(vector, 100);
@@ -28,6 +28,22 @@ void vector_append(struct Vector *vector, const char *value, size_t l) {
 
 	char *_ptr = strndup(value, l);
 	vector->data[vector->length++] = _ptr;
+	return vector->length;
+}
+
+/**
+ * Append the pointer "value" to vector
+ *
+ * returns the index
+ */
+int vector_append(struct Vector *vector, char *value) {
+	// make sure there's room to expand into
+	if (vector->length >= vector->capacity) {
+		vector_increase_capacity(vector, 100);
+	}
+
+	vector->data[vector->length++] = value;
+	return vector->length;
 }
 
 char* vector_get(struct Vector *vector, int index) {

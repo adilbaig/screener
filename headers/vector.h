@@ -13,7 +13,8 @@ struct Vector {
 };
 
 void vector_init(struct Vector *vector);
-void vector_append(struct Vector *vector, const char *value, size_t l);
+int  vector_append(struct Vector *vector, char *value);
+int  vector_append_copy(struct Vector *vector, const char *value, size_t l);
 char* vector_get(struct Vector *vector, int index);
 ssize_t vector_find(struct Vector *vector, const char value[]);
 void vector_print(struct Vector *vector);
