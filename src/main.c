@@ -160,7 +160,7 @@ void vectorize_csv(struct Vector *vector, char *str, size_t length) {
         if (str[i] == ',' || i + 1 == length) {
             l = i - last_comma;
             //printf("%i) Address %x, '%s', Length = %i \n", i, &str[last_comma], &str[last_comma], l);
-            vector_append(vector, &str[last_comma], l);
+            vector_append_copy(vector, &str[last_comma], l);
             last_comma = i + 1;
         }
     }
