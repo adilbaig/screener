@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 
 void load_table(struct Table* table, char* file) {
     FILE *stream = fopen(file, "r");
-    if (stream == NULL) {
+    if (!stream) {
         perror("Could not open file");
         exit(EXIT_FAILURE);
     }
