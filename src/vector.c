@@ -4,8 +4,8 @@
 
 //static == (private in PHP)
 static void vector_increase_capacity(struct Vector *vector, int capacity) {
-    vector->capacity += capacity;
-    vector->data = realloc(vector->data, sizeof(size_t) * vector->capacity);
+	vector->capacity += capacity;
+	vector->data = realloc(vector->data, sizeof(size_t) * vector->capacity);
 }
 
 /** ------------ PUBLIC ------------ **/
@@ -48,21 +48,18 @@ int vector_append(struct Vector *vector, char *value) {
 
 char* vector_get(struct Vector *vector, int index) {
 	if (index >= vector->length || index < 0) {
-		printf("Index %d out of bounds for vector of length %d\n", index,
-				vector->length);
+		printf("Index %d out of bounds for vector of length %d\n", index, vector->length);
 		exit(1);
 	}
+
 	return vector->data[index];
 }
 
-
-ssize_t vector_find(struct Vector *vector, const char value[])
-{
-	for(int i = 0; i < vector->length; i++)
-	{
+ssize_t vector_find(struct Vector *vector, const char value[]) {
+	for (int i = 0; i < vector->length; i++) {
 //		printf("i = %i, '%s' == '%s'. CMP = %i\n", i, vector->data[i], value, strcmp(vector->data[i], value));
 
-		if(strcmp(vector->data[i], value) == 0)
+		if (strcmp(vector->data[i], value) == 0)
 			return i;
 	}
 
